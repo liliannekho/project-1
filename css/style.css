@@ -1,0 +1,46 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    grid-template-rows: repeat(8, 50px);
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.cell:nth-child(odd) {
+    background-color: #d18b47;
+}
+
+.cell:nth-child(even) {
+    background-color: #f0d9b5;
+}
+
+.piece {
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+}
+
+.piece-white {
+    background-color: #fff;
+}
+
+.piece-black {
+    background-color: #000;
+}
