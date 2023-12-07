@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const boardElement = document.getElementById('board');
     const board = createBoard();
+    let currentPlayer = 'W';
     renderBoard(board);
 
     let selectedCell = null;
@@ -36,7 +37,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const cellElement = document.createElement('div');
                 cellElement.classList.add('cell');
                 cellElement.style.backgroundColor = cell.isWhite ? '#f0d9b5' : '#d18b47';
+
+                // Attach the 'click' event listener to each cell
                 cellElement.addEventListener('click', () => handleCellClick(cell));
+
                 boardElement.appendChild(cellElement);
 
                 if (cell.piece) {
@@ -47,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-
+    
     function handleCellClick(cell) {
         if (!selectedCell) {
             // Select the piece to move
@@ -56,27 +60,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 highlightPossibleMoves(cell);
             }
         } else {
+            // Move the selected piece
             if (isValidMove(selectedCell, cell)) {
                 movePiece(selectedCell, cell);
-
-                // Check for capture moves
-                if (isCaptureMove(selectedCell, cell)) {
-                    performCapture(selectedCell, cell);
-
-                    // Check for additional captures
-                    if (!hasMoreCaptures(cell)) {
-                        switchPlayer();
-                    }
-                } else {
-                    switchPlayer();
-                }
+                switchPlayer();
             }
 
             // Clear the selection and highlights
             clearSelection();
         }
     }
-}
 
     function switchPlayer() {
         // Switch players between 'W' and 'B'
@@ -88,33 +81,42 @@ document.addEventListener('DOMContentLoaded', function () {
         return piece === currentPlayer;
     }
 
-    
     function isValidMove(startCell, endCell) {
         const rowDiff = Math.abs(endCell.row - startCell.row);
         const colDiff = Math.abs(endCell.col - startCell.col);
-    
+
         // Check if the destination cell is empty
         if (endCell.piece) {
             return false;
         }
-    
+
         // Check if it's a regular move
         if (rowDiff === 1 && colDiff === 1) {
             return true;
         }
-    
+
         // Check if it's a jump move
         if (rowDiff === 2 && colDiff === 2) {
             const jumpedRow = (startCell.row + endCell.row) / 2;
             const jumpedCol = (startCell.col + endCell.col) / 2;
             const jumpedCell = board[Math.floor(jumpedRow)][Math.floor(jumpedCol)];
-    
+
             // Check if there is an opponent's piece to jump over
             return jumpedCell.piece && jumpedCell.piece !== startCell.piece;
         }
-    
+
         return false;
     }
+
+    function movePiece(startCell, endCell) {
+        // Move the piece from startCell to endCell
+        endCell.piece = startCell.piece;
+        startCell.piece = null;
+
+        // Update the visual representation of the board
+        renderBoard(board);
+    }
+    
     
 
     function isCaptureMove(startCell, endCell) {
@@ -192,21 +194,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function highlightPossibleMoves(cell) {
+        // Clear previous highlights
+        clearHighlights();
+    
         // Add your logic to highlight possible moves
         // For simplicity, we'll highlight the adjacent cells and capturing moves
         const adjacentCells = getAdjacentCells(cell);
         const capturingMoves = getCapturingMoves(cell);
-
+    
         for (const adjCell of adjacentCells) {
-            const cellElement = getCellElement(adjCell.row, adjCell.col);
-            cellElement.classList.add('highlight');
+            if (!adjCell.piece) {
+                const cellElement = getCellElement(adjCell.row, adjCell.col);
+                cellElement.classList.add('highlight');
+            }
         }
-
+    
         for (const capturingMove of capturingMoves) {
-            const cellElement = getCellElement(capturingMove.row, capturingMove.col);
-            cellElement.classList.add('highlight-capture');
+            if (!capturingMove.piece) {
+                const cellElement = getCellElement(capturingMove.row, capturingMove.col);
+                cellElement.classList.add('highlight-capture');
+            }
         }
     }
+    
 
     function getCapturingMoves(cell) {
         // Return capturing moves for the current player
@@ -266,44 +276,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function clearSelection() {
         // Clear the selection and highlights
         selectedCell = null;
-        const highlightedCells = document.querySelectorAll('.highlight, .highlight-capture');
-        highlightedCells.forEach(cell => cell.classList.remove('highlight', 'highlight-capture'));
-    }
-
-    function switchPlayer() {
-        // Add your logic to switch players
-        // For simplicity, we'll assume two players taking turns
-    }
-});
-function highlightPossibleMoves(cell) {
-    // Clear previous highlights
-    clearHighlights();
-
-    // Add your logic to highlight possible moves
-    // For simplicity, we'll highlight the adjacent cells and capturing moves
-    const adjacentCells = getAdjacentCells(cell);
-    const capturingMoves = getCapturingMoves(cell);
-
-    // Highlight adjacent cells
-    for (const adjCell of adjacentCells) {
-        const cellElement = getCellElement(adjCell.row, adjCell.col);
-        cellElement.classList.add('highlight');
-    }
-
-    // Highlight capturing moves
-    for (const capturingMove of capturingMoves) {
-        const cellElement = getCellElement(capturingMove.row, capturingMove.col);
-        if (!cellElement.classList.contains('highlight')) {
-            cellElement.classList.add('highlight-capture');
-        }
-    }
-}
-
-    function clearSelection() {
-        // Clear the selection and highlights
-        selectedCell = null;
         clearHighlights();
     }
+
     
     function clearHighlights() {
         // Remove the highlight classes from all cells
@@ -327,4 +302,4 @@ function highlightPossibleMoves(cell) {
             clearSelection();
         }
     }
-    
+})
