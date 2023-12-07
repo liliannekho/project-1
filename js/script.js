@@ -147,35 +147,71 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function isValidMove(startCell, endCell) {
-        // Add your move validation logic here
-        // For simplicity, we'll assume pieces can only move diagonally
         const rowDiff = Math.abs(endCell.row - startCell.row);
         const colDiff = Math.abs(endCell.col - startCell.col);
-
-        return rowDiff === 1 && colDiff === 1 && !endCell.piece;
+    
+        // Check if the destination cell is empty
+        if (endCell.piece) {
+            return false;
+        }
+    
+        // Check if it's a regular move
+        if (rowDiff === 1 && colDiff === 1) {
+            return true;
+        }
+    
+        // Check if it's a jump move
+        if (rowDiff === 2 && colDiff === 2) {
+            const jumpedRow = (startCell.row + endCell.row) / 2;
+            const jumpedCol = (startCell.col + endCell.col) / 2;
+            const jumpedCell = board[Math.floor(jumpedRow)][Math.floor(jumpedCol)];
+    
+            // Check if there is an opponent's piece to jump over
+            return jumpedCell.piece && jumpedCell.piece !== startCell.piece;
+        }
+    
+        return false;
     }
 
     function isCaptureMove(startCell, endCell) {
-        // Add your logic to check if the move is a capturing move
+        // Check if it's a capturing move (jump move)
         const rowDiff = Math.abs(endCell.row - startCell.row);
         const colDiff = Math.abs(endCell.col - startCell.col);
-
-        return rowDiff === 2 && colDiff === 2 && !endCell.piece;
+    
+        // Check if it's a valid move with a jump of two squares
+        if (rowDiff === 2 && colDiff === 2) {
+            const jumpedRow = (startCell.row + endCell.row) / 2;
+            const jumpedCol = (startCell.col + endCell.col) / 2;
+            const jumpedCell = board[Math.floor(jumpedRow)][Math.floor(jumpedCol)];
+    
+            // Check if there is an opponent's piece to jump over
+            return jumpedCell.piece && jumpedCell.piece !== startCell.piece && !endCell.piece;
+        }
+    
+        return false;
     }
-
+    
     function performCapture(startCell, endCell) {
         // Capture the opponent's piece
         const jumpedRow = (startCell.row + endCell.row) / 2;
         const jumpedCol = (startCell.col + endCell.col) / 2;
         const jumpedRowIndex = Math.floor(jumpedRow);
         const jumpedColIndex = Math.floor(jumpedCol);
+    
+        // Clear the piece from the logical representation of the board
         board[jumpedRowIndex][jumpedColIndex].piece = null;
     
         // Move the current piece to the destination cell
         movePiece(startCell, endCell);
     
+        // Remove the HTML element of the jumped-over piece
+        const jumpedCellElement = getCellElement(jumpedRowIndex, jumpedColIndex);
+        jumpedCellElement.innerHTML = '';
+    
         renderBoard(board);
-    }    
+    }
+    
+    
 
     function movePiece(startCell, endCell) {
         // Move the piece from startCell to endCell
@@ -298,8 +334,23 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isValidMove(selectedCell, cell)) {
                 movePiece(selectedCell, cell);
                 switchPlayer();
+    
+                // Check for capture moves
+                if (isCaptureMove(selectedCell, cell)) {
+                    performCapture(selectedCell, cell);
+    
+                    // Check for additional captures
+                    if (hasMoreCaptures(cell)) {
+                        // Allow for consecutive captures
+                        selectedCell = cell;
+                        highlightPossibleMoves(cell);
+                        return;
+                    }
+                }
+    
+                // Clear the selection and highlights
+                clearSelection();
             }
-            clearSelection();
         }
     }
 })
