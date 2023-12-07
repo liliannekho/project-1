@@ -44,3 +44,12 @@ body {
 .piece-black {
     background-color: #000;
 }
+
+/* Add these styles to your existing CSS */
+.cell.highlight {
+    outline: 2px solid #00ff00; /* Green outline for regular moves */
+}
+
+.cell.highlight-capture {
+    outline: 2px solid #ff0000; /* Red outline for capturing moves */
+}

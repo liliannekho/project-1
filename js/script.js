@@ -80,7 +80,6 @@
     }
 
 function isValidMove(startCell, endCell) {
-    // Add your move validation logic here
     const rowDiff = Math.abs(endCell.row - startCell.row);
     const colDiff = Math.abs(endCell.col - startCell.col);
 
@@ -111,6 +110,8 @@ function isCaptureMove(startCell, endCell) {
     // Check if it's a capturing move (jump move)
     return isValidMove(startCell, endCell) && Math.abs(endCell.row - startCell.row) === 2;
 }
+
+
 
 
 function performCapture(startCell, endCell) {
@@ -202,43 +203,92 @@ function performCapture(startCell, endCell) {
         const capturingMoves = [];
         const rowOffsets = [-2, 2];
         const colOffsets = [-2, 2];
-
+    
         for (const rowOffset of rowOffsets) {
-          for (const colOffset of colOffsets) {
+            for (const colOffset of colOffsets) {
+                const newRow = cell.row + rowOffset;
+                const newCol = cell.col + colOffset;
+                const capturedRow = (cell.row + newRow) / 2;
+                const capturedCol = (cell.col + newCol) / 2;
+    
+                if (isValidCell(newRow, newCol) && isValidCell(capturedRow, capturedCol)) {
+                    const capturedCell = board[capturedRow][capturedCol];
+                    const capturingMove = board[newRow][newCol];
+    
+                    if (capturedCell.piece && capturedCell.piece !== cell.piece && !capturingMove.piece) {
+                        capturingMoves.push(capturingMove);
+                    }
+                }
+            }
+        }
+    
+        return capturingMoves;
+    }
+    
+        
+function getAdjacentCells(cell) {
+    // Return adjacent cells (for simplicity, only diagonal moves)
+    const adjacentCells = [];
+    const rowOffsets = [-1, 1];
+    const colOffsets = [-1, 1];
+
+    for (const rowOffset of rowOffsets) {
+        for (const colOffset of colOffsets) {
+            const newRow = cell.row + rowOffset;
+            const newCol = cell.col + colOffset;
+            if (isValidCell(newRow, newCol)) {
+                adjacentCells.push(board[newRow][newCol]);
+            }
+        }
+    }
+    return adjacentCells;
+}
+
+function getCapturingMoves(cell) {
+    // Return capturing moves for the current player
+    const capturingMoves = [];
+    const rowOffsets = [-2, 2];
+    const colOffsets = [-2, 2];
+
+    for (const rowOffset of rowOffsets) {
+        for (const colOffset of colOffsets) {
             const newRow = cell.row + rowOffset;
             const newCol = cell.col + colOffset;
             const capturedRow = (cell.row + newRow) / 2;
             const capturedCol = (cell.col + newCol) / 2;
 
             if (isValidCell(newRow, newCol) && isValidCell(capturedRow, capturedCol)) {
-              const capturedCell = board[capturedRow][capturedCol];
-              if (capturedCell.piece && capturedCell.piece !== cell.piece) {
-                const capturingMove = board[newRow][newCol];
-                if (!capturingMove.piece) {
-                  capturingMoves.push(capturingMove);
+                const capturedCell = board[capturedRow][capturedCol];
+                if (capturedCell.piece && capturedCell.piece !== cell.piece) {
+                    const capturingMove = board[newRow][newCol];
+                    if (!capturingMove.piece) {
+                        capturingMoves.push(capturingMove);
+                    }
                 }
-              }
             }
-          }
         }
+    }
 
-        return capturingMoves;
-      }
+    return capturingMoves;
+}
 
-      function getAdjacentCells(cell) {
-        // Return adjacent cells (for simplicity, only diagonal moves)
-        const adjacentCells = [];
-        for (let rowOffset = -1; rowOffset <= 1; rowOffset += 2) {
-          for (let colOffset = -1; colOffset <= 1; colOffset += 2) {
+function getAdjacentCells(cell) {
+    // Return adjacent cells (for simplicity, only diagonal moves)
+    const adjacentCells = [];
+    const rowOffsets = [-1, 1];
+    const colOffsets = [-1, 1];
+
+    for (const rowOffset of rowOffsets) {
+        for (const colOffset of colOffsets) {
             const newRow = cell.row + rowOffset;
             const newCol = cell.col + colOffset;
             if (isValidCell(newRow, newCol)) {
-              adjacentCells.push(board[newRow][newCol]);
+                adjacentCells.push(board[newRow][newCol]);
             }
-          }
         }
-        return adjacentCells;
-      }
+    }
+    return adjacentCells;
+}
 
       function isValidCell(row, col) {
         return row >= 0 && row < 8 && col >= 0 && col < 8;
@@ -262,3 +312,48 @@ function performCapture(startCell, endCell) {
       }
     });
  
+    function highlightPossibleMoves(cell) {
+        // Clear previous highlights
+        clearHighlights();
+    
+        // Add your logic to highlight possible moves
+        // For simplicity, we'll highlight the adjacent cells and capturing moves
+        const adjacentCells = getAdjacentCells(cell);
+        const capturingMoves = getCapturingMoves(cell);
+    
+        // Highlight adjacent cells
+        for (const adjCell of adjacentCells) {
+            const cellElement = getCellElement(adjCell.row, adjCell.col);
+            cellElement.classList.add('highlight');
+        }
+    
+        // Highlight capturing moves
+        for (const capturingMove of capturingMoves) {
+            const cellElement = getCellElement(capturingMove.row, capturingMove.col);
+            cellElement.classList.add('highlight-capture');
+        }
+    }
+    function clearSelection() {
+        // Clear the selection and highlights
+        selectedCell = null;
+        clearHighlights();
+    }
+    
+    function clearHighlights() {
+        // Remove the highlight classes from all cells
+        const highlightedCells = document.querySelectorAll('.highlight, .highlight-capture');
+        highlightedCells.forEach(cell => cell.classList.remove('highlight', 'highlight-capture'));
+    }
+    function handleCellClick(cell) {
+        if (!selectedCell) {
+            // Select the piece to move
+            if (cell.piece && isCurrentPlayerPiece(cell.piece)) {
+                selectedCell = cell;
+                highlightPossibleMoves(cell);
+            }
+        } else {
+            // Handle moves as before
+            // ...
+        }
+    }
+            
