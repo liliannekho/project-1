@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+
     const boardElement = document.getElementById('board');
     const board = createBoard();
     let currentPlayer = 'W';
@@ -116,30 +116,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update the visual representation of the board
         renderBoard(board);
     }
-    
-    
+
 
     function isCaptureMove(startCell, endCell) {
         // Check if it's a capturing move (jump move)
         return isValidMove(startCell, endCell) && Math.abs(endCell.row - startCell.row) === 2 && Math.abs(endCell.col - startCell.col) === 2;
     }
         
-
-    function performCapture(startCell, endCell) {
-        // Capture the opponent's piece
-        const jumpedRow = (startCell.row + endCell.row) / 2;
-        const jumpedCol = (startCell.col + endCell.col) / 2;
-        const jumpedRowIndex = Math.floor(jumpedRow);
-        const jumpedColIndex = Math.floor(jumpedCol);
-        board[jumpedRowIndex][jumpedColIndex].piece = null;
-
-        // Move the current piece to the destination cell
-        movePiece(startCell, endCell);
-
-        renderBoard(board);
-    }
-
-    // ... (your existing code)
 
     function isCurrentPlayerPiece(piece) {
         // Replace with your player tracking logic
@@ -353,4 +336,3 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-})
