@@ -173,6 +173,8 @@
     
         return false;
     }
+
+    let jumpedRowIndex, jumpedColIndex;
     
     function performCapture(startCell, endCell) {
         // Capture the opponent's piece
@@ -180,6 +182,10 @@
         const jumpedCol = (startCell.col + endCell.col) / 2;
         const jumpedRowIndex = Math.floor(jumpedRow);
         const jumpedColIndex = Math.floor(jumpedCol);
+    
+        // Log information about the captured piece
+        const capturedPiece = board[jumpedRowIndex][jumpedColIndex].piece;
+        console.log(`Captured piece at row ${jumpedRowIndex}, col ${jumpedColIndex}: ${capturedPiece}`);
     
         // Clear the piece from the logical representation of the board
         board[jumpedRowIndex][jumpedColIndex].piece = null;
