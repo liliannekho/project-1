@@ -3,6 +3,7 @@
     const board = createBoard();
     let currentPlayer = 'W';
     renderBoard(board);
+    let capturedPiece;
 
     let selectedCell = null;
 
@@ -183,6 +184,9 @@
         const jumpedRowIndex = Math.floor(jumpedRow);
         const jumpedColIndex = Math.floor(jumpedCol);
     
+        let capturedPiece;
+
+        if (isValidCell(jumpedRowIndex, jumpedColIndex)) {
         // Log information about the captured piece
         const capturedPiece = board[jumpedRowIndex][jumpedColIndex].piece;
         console.log(`Captured piece at row ${jumpedRowIndex}, col ${jumpedColIndex}: ${capturedPiece}`);
@@ -196,7 +200,7 @@
         // Remove the HTML element of the jumped-over piece
         const jumpedCellElement = getCellElement(jumpedRowIndex, jumpedColIndex);
         jumpedCellElement.innerHTML = '';
-    
+        }
         renderBoard(board);
     }
     
