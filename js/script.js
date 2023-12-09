@@ -9,10 +9,15 @@ renderBoard(board);
 
 
 function createBoard() {
+    //create an empty array for board
     const board = [];
+    //loop through each row
     for (let row = 0; row < 8; row++) {
+        //empty array for cells in current row
         const rowData = [];
+        //loop for column
         for (let col = 0; col < 8; col++) {
+            //cell object with row and column coordinates
             const cell = {
                 row,
                 col,
@@ -42,6 +47,9 @@ function renderBoard(board) {
 
             // Attach the 'click' event listener to each cell
             cellElement.addEventListener('click', () => handleCellClick(cell));
+
+            cellElement.dataset.row = row;
+            cellElement.dataset.col = col;
 
             boardElement.appendChild(cellElement);
 
@@ -86,7 +94,7 @@ function isValidMove(startCell, endCell) {
         jumpedCell = board[Math.floor(jumpedRow)][Math.floor(jumpedCol)];
 
         // Check if there is an opponent's piece to jump over
-        return jumpedCell.piece && jumpedCell.piece !== startCell.piece;
+        return jumpedCell.piece && jumpedCell.piece !== startCell.piece && !endCell.piece
     }
 
     return false;
@@ -309,3 +317,9 @@ function declareWinner(winner) {
     // You can add further actions here, such as restarting the game or redirecting to another page.
     renderBoard(createBoard()); // Reset the board
 }
+
+function start() {
+    boardElement.addEventListener('click', (event) => handleCellClick(event.target));
+    renderBoard(board);
+}
+start();
