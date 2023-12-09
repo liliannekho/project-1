@@ -291,7 +291,7 @@ function handleCellClick(cell) {
             }
             if (!hasPieces(currentPlayer)) {
                 declareWinner(currentPlayer === 'W' ? 'B' : 'W');
-                return;  // Don't forget to return after declaring the winner
+                return;  
             }
 
             // Clear the selection and highlights
@@ -314,7 +314,6 @@ function hasPieces(player) {
 
 function declareWinner(winner) {
     alert(`Player ${winner} wins!`);
-    // You can add further actions here, such as restarting the game or redirecting to another page.
     renderBoard(createBoard()); // Reset the board
 }
 
