@@ -17,7 +17,7 @@ function createBoard() {
         const rowData = [];
         //loop for column
         for (let col = 0; col < 8; col++) {
-            //cell object with row and column coordinates
+            //cell object with row and column coordinates 
             const cell = {
                 row,
                 col,
