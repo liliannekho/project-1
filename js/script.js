@@ -107,7 +107,6 @@ function movePiece(startCell, endCell, jumpCell = null) {
     if (jumpCell) {
         jumpCell.piece = null 
         jumpCell = null
-        //more capture logic 
     }
 
     // Update the visual representation of the board
