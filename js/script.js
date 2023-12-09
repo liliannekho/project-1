@@ -114,7 +114,6 @@ function movePiece(startCell, endCell, jumpCell = null) {
 }   
 
 function isCurrentPlayerPiece(piece) {
-    // Replace with your player tracking logic
     return true;
 }
 
